@@ -1,0 +1,60 @@
+/* src/App.css */
+
+/* איפוס בסיסי */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* תופס בדיוק את כל גובה המסך */
+  background-color: #f0f2f5;
+  color: #333;
+  overflow: hidden; /* מונע סקרול כללי של הדף */
+}
+
+/* Header Styling */
+.app-header {
+  background-color: #1a1a1b;
+  color: white;
+  padding: 10px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+
+.logo h1 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.version {
+  font-size: 0.7rem;
+  color: #888;
+}
+
+.user-badge {
+  background: #333;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+/* Main Content Area */
+.app-main {
+  flex-grow: 1; /* לוקח את כל המקום הפנוי בין ה-Header ל-Footer */
+  padding: 20px;
+  overflow-y: auto; /* מאפשר סקרול רק בתוך אזור המסמכים */
+}
+
+/* Footer (The Console) */
+.app-footer {
+  background-color: white;
+  box-shadow: 0 -2px 15px rgba(0,0,0,0.1);
+  z-index: 10;
+}

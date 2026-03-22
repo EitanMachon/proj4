@@ -1,0 +1,43 @@
+/* src/components/common/Button.css */
+.custom-button {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+}
+
+.custom-button:hover {
+  background-color: #e0e0e0;
+  border-color: #999;
+}
+
+.custom-button:active {
+  transform: translateY(2px);
+  background-color: #d0d0d0;
+}
+
+/* סגנון מיוחד למקשי מקלדת */
+.custom-button.key {
+  width: 45px;
+  height: 45px;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+/* סגנון למקשים מיוחדים (Del, Save) */
+.custom-button.action {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.custom-button.action:hover {
+  background-color: #0056b3;
+}

@@ -1,0 +1,35 @@
+/* src/components/Keyboard/Keyboard.css */
+
+.keyboard-container {
+    background-color: #333; /* צבע כהה למראה מקצועי */
+    padding: 20px;
+    border-radius: 12px;
+    width: fit-content;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* עיצוב המקשים בתוך המקלדת */
+.keyboard-row button {
+    min-width: 45px;
+    height: 45px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* שורת השפות */
+.lang-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}

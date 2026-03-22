@@ -1,0 +1,25 @@
+/* src/components/EditorConsole/EditorConsole.css */
+.editor-console {
+    background-color: #f8f9fa;
+    border-top: 2px solid #ddd;
+    padding: 10px 0;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+}
+
+.console-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.console-toolbar {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.console-keyboard {
+    display: flex;
+    justify-content: center;
+}

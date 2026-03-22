@@ -1,0 +1,53 @@
+/* src/components/DisplayArea/DisplayArea.css */
+.display-area-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f0f2f5;
+    min-height: 400px;
+    overflow-y: auto;
+    justify-content: center;
+}
+
+.document-window {
+    width: 300px;
+    height: 400px;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.document-window.active {
+    border-color: #007bff;
+    transform: scale(1.02);
+    box-shadow: 0 10px 20px rgba(0,123,255,0.2);
+}
+
+.doc-header {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.doc-content {
+    padding: 15px;
+    flex-grow: 1;
+    white-space: pre-wrap; /* שומר על ירידות שורה */
+    word-wrap: break-word;
+}
+
+.placeholder {
+    color: #ccc;
+    font-style: italic;
+}
