@@ -1,0 +1,22 @@
+/* src/styles/variables.css */
+:root {
+  /* צבעים ראשיים */
+  --primary-color: #007bff;
+  --primary-hover: #0056b3;
+  --bg-light: #f8f9fa;
+  --bg-dark: #1a1a1b;
+  
+  /* צבעי טקסט */
+  --text-main: #333;
+  --text-muted: #888;
+  
+  /* גבולות וצללים */
+  --border-color: #ddd;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --shadow-main: 0 4px 15px rgba(0,0,0,0.1);
+  
+  /* ריווחים */
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+}
