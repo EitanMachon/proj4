@@ -1,27 +1,20 @@
-// src/components/EditorConsole/EditorConsole.jsx
+import React from 'react';
 import Toolbar from '../Toolbar/Toolbar';
 import Keyboard from '../Keyboard/Keyboard';
 import './EditorConsole.css';
 
-const EditorConsole = ({ activeDoc, onUpdateStyle, onAddDoc, onSave, onKeyClick }) => {
+const EditorConsole = ({ onAddChar, onDeleteChar, onDeleteWord, onClearAll }) => {
   return (
     <div className="editor-console">
-      <div className="console-inner">
-        {/* החלק העליון של הקונסולה - כלי עריכה */}
-        <section className="console-toolbar">
-          <Toolbar 
-            activeDoc={activeDoc} 
-            onUpdateStyle={onUpdateStyle} 
-            onAddDoc={onAddDoc}
-            onSave={onSave}
-          />
-        </section>
-
-        {/* החלק התחתון של הקונסולה - המקלדת */}
-        <section className="console-keyboard">
-          <Keyboard onKeyClick={onKeyClick} />
-        </section>
-      </div>
+      {/* סרגל הכלים מקבל את פונקציית הניקוי הכללי */}
+      <Toolbar onClearAll={onClearAll} />
+      
+      {/* המקלדת מקבלת את פונקציות המחיקה */}
+      <Keyboard 
+        onKeyClick={onAddChar} 
+        onDeleteChar={onDeleteChar}
+        onDeleteWord={onDeleteWord}
+      />
     </div>
   );
 };

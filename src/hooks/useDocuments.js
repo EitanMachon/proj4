@@ -1,70 +1,57 @@
-// src/hooks/useDocuments.js
 import { useState, useEffect } from 'react';
-import { createNewDoc } from '../data/initialState';
 import { storageService } from '../services/storageService';
 
-/**
- * Custom Hook לניהול הלוגיקה של המסמכים בפרויקט
- */
-export const useDocuments = () => {
-    // 1. הגדרת ה-State המרכזי: מערך של מסמכים
-    const [documents, setDocuments] = useState(() => {
-        // טעינה ראשונית מה-LocalStorage או יצירת מסמך ראשון אם ריק
-        const saved = storageService.loadDocs();
-        return saved.length > 0 ? saved : [createNewDoc(Date.now())];
-    });
+export const useDocuments = (user) => {
+  const [documents, setDocuments] = useState([]);
+  const [activeDocId, setActiveDocId] = useState(null);
 
-    // 2. ה-State של המסמך שנמצא כרגע ב"פוקוס" (עבור עריכה)
-    const [activeDocId, setActiveDocId] = useState(documents[0].id);
+  // טעינה לפי משתמש (דרישה מחלק ד')
+  useEffect(() => {
+    const saved = storageService.getDocuments();
+    // מסננים: רק מסמכים ששייכים למשתמש המחובר או ל'guest'
+    const userDocs = saved.filter(doc => doc.owner === (user?.username || 'guest'));
+    
+    if (userDocs.length === 0) {
+      const initialDoc = { 
+        id: Date.now(), 
+        text: '', 
+        style: { color: '#000000', fontSize: '16px', fontFamily: 'Arial' },
+        owner: user?.username || 'guest'
+      };
+      setDocuments([initialDoc]);
+      setActiveDocId(initialDoc.id);
+    } else {
+      setDocuments(userDocs);
+      setActiveDocId(userDocs[0].id);
+    }
+  }, [user]);
 
-    // 3. שמירה אוטומטית ל-LocalStorage בכל פעם שהמסמכים משתנים
-    useEffect(() => {
-        storageService.saveDocs(documents);
-    }, [documents]);
+  // פונקציות מחיקה (דרישות חלק א')
+  const deleteChar = () => {
+    setDocuments(prev => prev.map(doc => 
+      doc.id === activeDocId ? { ...doc, text: doc.text.slice(0, -1) } : doc
+    ));
+  };
 
-    // --- פונקציות לוגיקה (המנוע) ---
+  const deleteWord = () => {
+    setDocuments(prev => prev.map(doc => {
+      if (doc.id !== activeDocId) return doc;
+      const lastSpace = doc.text.trimEnd().lastIndexOf(' ');
+      return { ...doc, text: lastSpace === -1 ? '' : doc.text.substring(0, lastSpace + 1) };
+    }));
+  };
 
-    // הוספת תו למסמך הפעיל
-    const addChar = (char) => {
-        setDocuments(prevDocs => prevDocs.map(doc => 
-            doc.id === activeDocId ? { ...doc, content: doc.content + char } : doc
-        ));
-    };
+  const clearDocument = () => {
+    setDocuments(prev => prev.map(doc => 
+      doc.id === activeDocId ? { ...doc, text: '' } : doc
+    ));
+  };
 
-    // עדכון עיצוב (סטייל) למסמך הפעיל
-    const updateActiveStyle = (newStyle) => {
-        setDocuments(prevDocs => prevDocs.map(doc => 
-            doc.id === activeDocId ? { ...doc, style: { ...doc.style, ...newStyle } } : doc
-        ));
-    };
+  const addChar = (char) => {
+    setDocuments(prev => prev.map(doc => 
+      doc.id === activeDocId ? { ...doc, text: doc.text + char } : doc
+    ));
+  };
 
-    // הוספת מסמך חדש (חלק ג' של הפרויקט)
-    const addDocument = () => {
-        const newDoc = createNewDoc(Date.now());
-        setDocuments(prev => [...prev, newDoc]);
-        setActiveDocId(newDoc.id); // מעבר אוטומטי למסמך החדש
-    };
-
-    // מחיקת מסמך
-    const removeDocument = (id) => {
-        if (documents.length <= 1) return; // תמיד להשאיר לפחות מסמך אחד
-        const newDocs = documents.filter(doc => doc.id !== id);
-        setDocuments(newDocs);
-        if (activeDocId === id) setActiveDocId(newDocs[0].id);
-    };
-
-    // מציאת המסמך הפעיל כרגע (לשימוש בתצוגה)
-    const activeDoc = documents.find(doc => doc.id === activeDocId);
-
-    // מה שה-App יקבל מה-Hook
-    return {
-        documents,
-        activeDoc,
-        activeDocId,
-        setActiveDocId,
-        addChar,
-        updateActiveStyle,
-        addDocument,
-        removeDocument
-    };
+  return { documents, activeDocId, setActiveDocId, addChar, deleteChar, deleteWord, clearDocument, setDocuments };
 };

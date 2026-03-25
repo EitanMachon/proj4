@@ -1,69 +1,61 @@
-// src/App.jsx
-// src/App.jsx
-
-// 1. ה-Hooks וה-Services נמצאים במקום הנכון
+import React, { useState } from 'react';
 import { useDocuments } from './hooks/useDocuments';
-import { authService } from './services/authService';
-
-// 2. התיקון הקריטי: מחקנו את ה- "/components"
-import DisplayArea from "./DisplayArea/DisplayArea";
-import EditorConsole from "./EditorConsole/EditorConsole";
-
-// 3. ה-CSS נמצא באותה תיקייה
-import "./App.css";
+import DisplayArea from './DisplayArea/DisplayArea';
+import EditorConsole from './EditorConsole/EditorConsole';
+import './App.css';
 
 function App() {
-  // 1. חילוץ כל הלוגיקה מה"מנוע" (Hook)
-  const { 
-    documents, 
-    activeDoc, 
-    activeDocId, 
-    setActiveDocId, 
-    addChar, 
-    updateActiveStyle, 
-    addDocument 
-  } = useDocuments();
+  const [user, setUser] = useState(null); // מתחילים בלי משתמש (חלק ד')
 
-  // 2. זיהוי המשתמש (חלק ד')
-  const currentUser = authService.getCurrentUser() || "אורח";
+  const {
+    documents, activeDocId, setActiveDocId,
+    addChar, deleteChar, deleteWord, clearDocument
+  } = useDocuments(user);
 
-  // 3. פונקציית עזר לשמירה
-  const handleSave = () => {
-    // השמירה ל-LocalStorage קורית אוטומטית בתוך ה-Hook בכל שינוי,
-    // כאן אנחנו רק נותנים אישור ויזואלי למשתמש.
-    alert(`המסמכים של ${currentUser} נשמרו בהצלחה!`);
-  };
+  // אם אין משתמש מחובר - נציג מסך כניסה (דרישה מחלק ד')
+  if (!user) {
+    return (
+      <div className="login-overlay">
+        <div className="login-box">
+          <h2>ברוכים הבאים ל-Visual Editor</h2>
+          <p>אנא הזדהה כדי לגשת למסמכים שלך</p>
+          <input id="userNameInput" type="text" placeholder="שם משתמש..." />
+          <button onClick={() => {
+            const name = document.getElementById('userNameInput').value;
+            if (name) setUser({ username: name });
+          }}>התחבר</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app-container">
-      {/* כותרת עליונה - Branding & User */}
       <header className="app-header">
         <div className="logo">
           <h1>Visual Text Editor</h1>
-          <span className="version">v1.0 | SOLID Edition</span>
+          <span className="version">v1.1 | SOLID Edition</span>
         </div>
-        <div className="user-badge">
-          שלום, <strong>{currentUser}</strong>
+        <div className="user-controls">
+          <span>שלום, <strong>{user.username}</strong></span>
+          <button className="logout-btn" onClick={() => setUser(null)}>התנתק</button>
         </div>
       </header>
 
-      {/* אזור התצוגה המרכזי - הצגת 10 מסמכים (חלק ג') */}
       <main className="app-main">
         <DisplayArea 
-          docs={documents} 
+          documents={documents} 
           activeDocId={activeDocId} 
-          onSelectDoc={setActiveDocId} 
+          onSelect={setActiveDocId} 
         />
       </main>
 
-      {/* קונסולת העריכה התחתונה - מאחדת Toolbar ו-Keyboard */}
       <footer className="app-footer">
         <EditorConsole 
-          activeDoc={activeDoc} 
-          onUpdateStyle={updateActiveStyle} 
-          onAddDoc={addDocument}
-          onSave={handleSave}
-          onKeyClick={addChar}
+          onAddChar={addChar}
+          onDeleteChar={deleteChar}
+          onDeleteWord={deleteWord}
+          onClearAll={clearDocument}
         />
       </footer>
     </div>
