@@ -1,9 +1,16 @@
 // src/App.jsx
+// src/App.jsx
+
+// 1. ה-Hooks וה-Services נמצאים במקום הנכון
 import { useDocuments } from './hooks/useDocuments';
 import { authService } from './services/authService';
-import DisplayArea from './components/DisplayArea/DisplayArea';
-import EditorConsole from './components/EditorConsole/EditorConsole';
-import './App.css';
+
+// 2. התיקון הקריטי: מחקנו את ה- "/components"
+import DisplayArea from "./DisplayArea/DisplayArea";
+import EditorConsole from "./EditorConsole/EditorConsole";
+
+// 3. ה-CSS נמצא באותה תיקייה
+import "./App.css";
 
 function App() {
   // 1. חילוץ כל הלוגיקה מה"מנוע" (Hook)
