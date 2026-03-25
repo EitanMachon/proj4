@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import { layouts } from "../data/keyboardLayouts";
+import React, { useState } from 'react';
 import './Keyboard.css';
 
 const Keyboard = ({ onKeyClick, onDeleteChar, onDeleteWord }) => {
