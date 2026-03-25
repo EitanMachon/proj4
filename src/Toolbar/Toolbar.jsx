@@ -1,5 +1,5 @@
 // src/components/Toolbar/Toolbar.jsx
-import { editorConfig } from '../../data/initialState';
+import { editorConfig } from "../data/initialState";
 import Button from '../common/Button';
 import './Toolbar.css';
 

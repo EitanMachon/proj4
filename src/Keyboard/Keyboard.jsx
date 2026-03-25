@@ -1,6 +1,6 @@
 // src/components/Keyboard/Keyboard.jsx
 import { useState } from 'react';
-import { layouts } from '../../data/keyboardLayouts';
+import { layouts } from "../data/keyboardLayouts";
 import Button from '../common/Button';
 import './Keyboard.css';
 import KeyButton from './KeyButton'; // שימוש בגרסה הספציפית של הכפתור
