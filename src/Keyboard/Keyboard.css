@@ -1,35 +1,100 @@
-/* src/components/Keyboard/Keyboard.css */
-
-.keyboard-container {
-    background-color: #333; /* צבע כהה למראה מקצועי */
-    padding: 20px;
-    border-radius: 12px;
-    width: fit-content;
-    margin: 20px auto;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+.keyboard-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-.keyboard-row {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
+/* סרגל שפות */
+.language-bar {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
 }
 
-/* עיצוב המקשים בתוך המקלדת */
-.keyboard-row button {
-    min-width: 45px;
-    height: 45px;
-    font-size: 1.1rem;
-    font-weight: 600;
+.lang-switch-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid #e2e8f0;
 }
 
-/* שורת השפות */
-.lang-switcher {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 15px;
+.lang-switch-btn.active-lang {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+/* רשת המקשים */
+.keys-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+  gap: 8px;
+  justify-content: center;
+}
+
+.key-tile {
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  box-shadow: 0 2px 0 #cbd5e1;
+  transition: all 0.1s;
+}
+
+.key-tile:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.key-tile:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+/* מקשים מיוחדים */
+.special-key {
+  font-size: 0.85rem;
+  font-weight: bold;
+  background: #f8fafc;
+}
+
+.backspace {
+  grid-column: span 2;
+  background: #fee2e2;
+  color: #ef4444;
+  border-color: #fca5a5;
+  box-shadow: 0 2px 0 #fca5a5;
+}
+
+.delete-word {
+  grid-column: span 2;
+  background: #fff7ed;
+  color: #ea580c;
+  border-color: #fdba74;
+  box-shadow: 0 2px 0 #fdba74;
+}
+
+.space-bar {
+  grid-column: span 4;
+  background: #f1f5f9;
+}
+
+.keyboard-error {
+  text-align: center;
+  color: #ef4444;
+  padding: 20px;
+  font-weight: bold;
 }

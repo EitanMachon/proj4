@@ -3,13 +3,30 @@ import Toolbar from '../Toolbar/Toolbar';
 import Keyboard from '../Keyboard/Keyboard';
 import './EditorConsole.css';
 
-const EditorConsole = ({ onAddChar, onDeleteChar, onDeleteWord, onClearAll }) => {
+const EditorConsole = ({ 
+  onAddChar, 
+  onDeleteChar, 
+  onDeleteWord, 
+  onClearAll,
+  onUndo,
+  onNewDoc,
+  onUpdateStyle,
+  onSearchReplace,
+  currentStyle
+}) => {
   return (
-    <div className="editor-console">
-      {/* סרגל הכלים מקבל את פונקציית הניקוי הכללי */}
-      <Toolbar onClearAll={onClearAll} />
+    <div className="editor-console-inner">
+      {/* סרגל כלים - ניהול עיצוב ופעולות מערכת */}
+      <Toolbar 
+        onUndo={onUndo}
+        onClearAll={onClearAll}
+        onNewDoc={onNewDoc}
+        onUpdateStyle={onUpdateStyle}
+        onSearchReplace={onSearchReplace}
+        currentStyle={currentStyle}
+      />
       
-      {/* המקלדת מקבלת את פונקציות המחיקה */}
+      {/* מקלדת - הזנת נתונים ומחיקה */}
       <Keyboard 
         onKeyClick={onAddChar} 
         onDeleteChar={onDeleteChar}
