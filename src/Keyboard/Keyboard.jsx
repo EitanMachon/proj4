@@ -1,42 +1,31 @@
-// src/components/Keyboard/Keyboard.jsx
-import { useState } from 'react';
+import React from 'react';
 import { layouts } from "../data/keyboardLayouts";
-import Button from '../common/Button';
 import './Keyboard.css';
-import KeyButton from './KeyButton'; // שימוש בגרסה הספציפית של הכפתור
 
-const Keyboard = ({ onKeyClick }) => {
-  // State מקומי: איזו מקלדת מוצגת עכשיו (he/en/emoji)
-  const [lang, setLang] = useState('he');
+const Keyboard = ({ onKeyClick, onDeleteChar, onDeleteWord }) => {
+  // כרגע נשתמש בפריסה הראשונה (עברית/אנגלית - נטפל בהחלפה בהמשך)
+  const currentLayout = layouts[0].keys;
 
   return (
     <div className="keyboard-container">
-      {/* שורת החלפת שפות */}
-      <div className="lang-switcher">
-        <Button label="עברית" onClick={() => setLang('he')} className={lang === 'he' ? 'active' : ''} />
-        <Button label="English" onClick={() => setLang('en')} className={lang === 'en' ? 'active' : ''} />
-        <Button label="😊" onClick={() => setLang('emoji')} className={lang === 'emoji' ? 'active' : ''} />
-      </div>
-
-      {/* רינדור שורות המקלדת */}
-      <div className="keys-grid">
-        {layouts[lang].map((row, rowIndex) => (
-          <div key={rowIndex} className="keyboard-row">
-            {row.map((key) => (
-              <Button 
-                key={key} 
-                label={key} 
-                onClick={() => onKeyClick(key)} 
-                className="key" 
-              />
-            ))}
-          </div>
+      <div className="keyboard-row">
+        {currentLayout.map((key) => (
+          <button 
+            key={key} 
+            className="key-btn" 
+            onClick={() => onKeyClick(key)}
+          >
+            {key}
+          </button>
         ))}
-      </div>
-      
-      {/* שורת מקשים מיוחדים (רווח) */}
-      <div className="special-keys">
-        <Button label="Space" onClick={() => onKeyClick(' ')} className="key space-bar" />
+        
+        {/* כפתורי מחיקה מיוחדים - דרישה מחלק א' */}
+        <button className="key-btn delete-btn" onClick={onDeleteChar}>
+          ⌫ Back
+        </button>
+        <button className="key-btn delete-word-btn" onClick={onDeleteWord}>
+          Del Word
+        </button>
       </div>
     </div>
   );
