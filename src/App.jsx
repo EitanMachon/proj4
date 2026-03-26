@@ -11,10 +11,21 @@ function App() {
   const [isRegistering, setIsRegistering] = useState(false); // מצב הרשמה
   const [error, setError] = useState('');
 
-  const {
-  documents, activeDocId, setActiveDocId, currentStyle, updateCurrentStyle,
-  addChar, deleteChar, addNewDocument, closeDocument, undo, searchReplace // הוסף את השניים האחרונים
-} = useDocuments(user);
+  // בתוך src/App.jsx
+const {
+  documents, 
+  activeDocId, 
+  setActiveDocId, 
+  currentStyle, 
+  updateCurrentStyle,
+  addChar, 
+  deleteChar, 
+  addNewDocument, 
+  closeDocument, 
+  undo, 
+  searchReplace,
+  clearDocument // <--- תוסיף את המילה הזו כאן!
+} = useDocuments(user);;
 
   // לוגיקת התחברות/הרשמה
   const handleAuth = (e) => {
