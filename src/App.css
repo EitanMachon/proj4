@@ -90,11 +90,34 @@ body {
 }
 
 /* --- המבנה המפוצל הראשי --- */
+/* מצא את .main-layout-split ושנה/הוסף: */
 .main-layout-split {
   display: flex;
-  flex: 1; /* תופס את כל המקום הפנוי מתחת להדר */
+  flex: 1;
   height: calc(100vh - var(--header-height));
   width: 100%;
+  transition: flex-direction 0.3s ease; /* אנימציה חלקה במעבר */
+}
+
+/* הוסף את הבלוק הזה בסוף הקובץ - זה הקסם הרספונסיבי */
+@media (max-width: 1100px) {
+  .main-layout-split {
+    flex-direction: column-reverse; /* במקום צד לצד, הם יהיו אחד מעל השני */
+    overflow-y: auto; /* מאפשר סקרול לכל הדף אם המסך קטן מדי */
+  }
+
+  .app-sidebar {
+    width: 100% !important; /* תופס את כל הרוחב כשהוא למטה */
+    min-width: 100% !important;
+    height: auto; /* גובה גמיש לפי התוכן */
+    border-right: none;
+    border-top: 2px solid var(--border-color);
+  }
+
+  .app-main {
+    height: 60vh; /* נותן למסמכים רוב מהמסך */
+    flex: none;
+  }
 }
 
 /* צד ימין - אזור המסמכים (Flexible) */

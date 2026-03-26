@@ -12,9 +12,9 @@ function App() {
   const [error, setError] = useState('');
 
   const {
-    documents, activeDocId, setActiveDocId, currentStyle, updateCurrentStyle,
-    addChar, deleteChar, addNewDocument, closeDocument
-  } = useDocuments(user);
+  documents, activeDocId, setActiveDocId, currentStyle, updateCurrentStyle,
+  addChar, deleteChar, addNewDocument, closeDocument, undo, searchReplace // הוסף את השניים האחרונים
+} = useDocuments(user);
 
   // לוגיקת התחברות/הרשמה
   const handleAuth = (e) => {
@@ -94,14 +94,14 @@ if (!user) {
           />
         </main>
         <aside className="app-sidebar">
-          <Toolbar 
-            onUndo={() => {}} // נחבר בהמשך
-            onClearAll={() => {}} 
-            onNewDoc={addNewDocument}
-            onUpdateStyle={updateCurrentStyle} // עדכון הסטייל מכאן והלאה
-            onSearchReplace={() => {}}
-            currentStyle={currentStyle}
-          />
+                      <Toolbar 
+              onUndo={undo} 
+              onClearAll={clearDocument} 
+              onNewDoc={addNewDocument}
+              onUpdateStyle={updateCurrentStyle}
+              onSearchReplace={searchReplace} // חיבור הפונקציה החדשה
+              currentStyle={currentStyle}
+            />
           <Keyboard onKeyClick={addChar} onDeleteChar={deleteChar} />
         </aside>
       </div>

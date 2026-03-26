@@ -2,48 +2,58 @@ import { useState, useEffect } from 'react';
 import { storageService } from '../services/storageService';
 
 export const useDocuments = (user) => {
+  // --- 1. הגדרת מצבים (States) ---
   const [documents, setDocuments] = useState([]);
   const [activeDocId, setActiveDocId] = useState(null);
   const [currentStyle, setCurrentStyle] = useState({ color: '#000000', fontSize: '16px', fontFamily: 'Arial' });
+  const [history, setHistory] = useState([]); // מחסנית לביצוע Undo
 
-  // טעינה ראשונית של הכל ברגע שהמשתמש מתחבר
+  // --- 2. טעינה וסנכרון (Effects) ---
+
+  // טעינה ראשונית לפי משתמש
   useEffect(() => {
     if (!user) return;
 
-    // 1. טעינת מסמכים
     const userDocs = storageService.getDocuments(user.username);
-    
-    // 2. טעינת מצב אחרון (איפה הוא עצר)
     const lastState = storageService.getUserState(user.username);
 
     if (userDocs.length > 0) {
       setDocuments(userDocs);
-      // מחזיר אותו בדיוק למסמך האחרון ולסטייל האחרון
       setActiveDocId(lastState?.activeDocId || userDocs[0].id);
       if (lastState?.currentStyle) setCurrentStyle(lastState.currentStyle);
     } else {
-      // אם זה משתמש חדש לגמרי, יוצרים לו מסמך ראשון
+      // יצירת מסמך ראשון למשתמש חדש
       const newDoc = { id: Date.now(), content: [], cursorIndex: 0, owner: user.username };
       setDocuments([newDoc]);
       setActiveDocId(newDoc.id);
     }
   }, [user]);
 
-  // שמירה אוטומטית של המסמכים בכל שינוי
+  // שמירה אוטומטית של המסמכים
   useEffect(() => {
     if (user && documents.length > 0) {
       storageService.saveDocuments(user.username, documents);
     }
   }, [documents, user]);
 
-  // שמירת ה"מצב" (State) בכל פעם שהוא משנה מסמך או צבע
+  // שמירת מצב עבודה (סמן וסטייל)
   useEffect(() => {
     if (user && activeDocId) {
       storageService.saveUserState(user.username, { activeDocId, currentStyle });
     }
   }, [activeDocId, currentStyle, user]);
 
+
+  // --- 3. לוגיקת עריכה (Functions) ---
+
+  // עזר: שמירת מצב להיסטוריה לפני שינוי
+  const saveToHistory = () => {
+    setHistory(prev => [...prev, JSON.stringify(documents)].slice(-10));
+  };
+
+  // הוספת תו עם הסטייל הנוכחי
   const addChar = (char) => {
+    saveToHistory(); // מאפשר לעשות Undo על ההקלדה
     setDocuments(prev => prev.map(doc => {
       if (doc.id !== activeDocId) return doc;
       const newContent = [...doc.content];
@@ -52,7 +62,9 @@ export const useDocuments = (user) => {
     }));
   };
 
+  // מחיקת תו (Backspace)
   const deleteChar = () => {
+    saveToHistory();
     setDocuments(prev => prev.map(doc => {
       if (doc.id !== activeDocId || doc.cursorIndex === 0) return doc;
       const newContent = [...doc.content];
@@ -61,16 +73,62 @@ export const useDocuments = (user) => {
     }));
   };
 
+  // ביטול פעולה אחרונה
+  const undo = () => {
+    if (history.length === 0) return;
+    const lastState = JSON.parse(history[history.length - 1]);
+    setDocuments(lastState);
+    setHistory(prev => prev.slice(0, -1));
+  };
+
+  // חיפוש והחלפה (שומר על עיצוב האות)
+  const searchReplace = (searchChar, replaceChar) => {
+    if (!searchChar || !replaceChar) return;
+    saveToHistory();
+    setDocuments(prev => prev.map(doc => {
+      if (doc.id !== activeDocId) return doc;
+      const newContent = doc.content.map(item => 
+        item.char === searchChar ? { ...item, char: replaceChar } : item
+      );
+      return { ...doc, content: newContent };
+    }));
+  };
+
+  // ניהול מסמכים (הוספה, סגירה, ניקוי)
   const addNewDocument = () => {
     const newDoc = { id: Date.now(), content: [], cursorIndex: 0, owner: user.username };
     setDocuments(prev => [...prev, newDoc]);
     setActiveDocId(newDoc.id);
   };
 
+  const closeDocument = (id) => {
+    setDocuments(prev => {
+      const filtered = prev.filter(doc => doc.id !== id);
+      if (id === activeDocId && filtered.length > 0) setActiveDocId(filtered[0].id);
+      return filtered;
+    });
+  };
+
+  const clearDocument = () => {
+    saveToHistory();
+    setDocuments(prev => prev.map(doc => 
+      doc.id === activeDocId ? { ...doc, content: [], cursorIndex: 0 } : doc
+    ));
+  };
+
+  // --- 4. חשיפת הפונקציות החוצה ---
   return { 
-    documents, activeDocId, setActiveDocId, 
-    currentStyle, updateCurrentStyle: setCurrentStyle,
-    addChar, deleteChar, addNewDocument,
-    closeDocument: (id) => setDocuments(d => d.filter(x => x.id !== id))
+    documents, 
+    activeDocId, 
+    setActiveDocId, 
+    currentStyle, 
+    updateCurrentStyle: setCurrentStyle,
+    addChar, 
+    deleteChar, 
+    undo, 
+    searchReplace, 
+    addNewDocument, 
+    closeDocument, 
+    clearDocument
   };
 };
