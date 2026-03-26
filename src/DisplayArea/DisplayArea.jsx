@@ -2,55 +2,43 @@ import React from 'react';
 import './DisplayArea.css';
 
 const DisplayArea = ({ documents = [], activeDocId, onSelect, onCloseDoc }) => {
-  // הגנה: אם documents הוא לא מערך, נציג הודעת טעינה
-  if (!Array.isArray(documents)) {
-    return <div className="loading-state">טוען מסמכים...</div>;
-  }
-
   return (
     <div className="display-area-container">
-      {documents.length === 0 ? (
-        <div className="empty-state">אין מסמכים פתוחים. לחץ על "מסמך חדש" כדי להתחיל.</div>
-      ) : (
-        documents.map((doc) => (
-          <div 
-            key={doc.id} 
-            className={`document-card ${doc.id === activeDocId ? 'active-focus' : ''}`}
-            onClick={() => onSelect(doc.id)}
-            style={{
-              color: doc.style?.color || '#000',
-              fontSize: doc.style?.fontSize || '16px',
-              fontFamily: doc.style?.fontFamily || 'Arial',
-            }}
-          >
-            {/* כותרת המסמך עם כפתור סגירה - דרישת חלק ג' */}
-            <div className="doc-header">
-              <span className="doc-id">📄 מסמך {doc.id.toString().slice(-4)}</span>
-              <button 
-                className="close-btn" 
-                onClick={(e) => {
-                  e.stopPropagation(); // מונע מהמסמך להיבחר כשסוגרים אותו
-                  onCloseDoc(doc.id);
-                }}
-                title="סגור מסמך"
-              >
-                &times;
-              </button>
-            </div>
-
-            {/* תוכן הטקסט */}
-            <div className="doc-body">
-              {doc.text}
-              {doc.id === activeDocId && <span className="text-cursor">|</span>}
-            </div>
-
-            {/* חיווי פוקוס - דרישת חלק ג' */}
-            {doc.id === activeDocId && (
-              <div className="focus-indicator">עריכה פעילה</div>
-            )}
+      {documents.map((doc) => (
+        <div 
+          key={doc.id} 
+          className={`document-card ${doc.id === activeDocId ? 'active-focus' : ''}`}
+          onClick={() => onSelect(doc.id)}
+        >
+          <div className="doc-header">
+            <span className="doc-id">📄 מסמך {doc.id.toString().slice(-4)}</span>
+            <button className="close-btn" onClick={(e) => { e.stopPropagation(); onCloseDoc(doc.id); }}>&times;</button>
           </div>
-        ))
-      )}
+
+          <div className="doc-body">
+            {/* כאן קורה הקסם: כל אות מקבלת את הסטייל שלה */}
+            {doc.content.map((item, index) => (
+              <span 
+                key={index} 
+                style={{
+                  color: item.style.color,
+                  fontSize: item.style.fontSize,
+                  fontFamily: item.style.fontFamily,
+                  position: 'relative'
+                }}
+              >
+                {/* הסמן הויזואלי */}
+                {doc.id === activeDocId && doc.cursorIndex === index && <span className="text-cursor">|</span>}
+                {item.char}
+              </span>
+            ))}
+            {/* סמן בסוף הטקסט */}
+            {doc.id === activeDocId && doc.cursorIndex === doc.content.length && <span className="text-cursor">|</span>}
+          </div>
+          
+          {doc.id === activeDocId && <div className="focus-indicator">עריכה פעילה</div>}
+        </div>
+      ))}
     </div>
   );
 };

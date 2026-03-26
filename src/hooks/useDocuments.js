@@ -1,23 +1,22 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { storageService } from '../services/storageService';
 
 export const useDocuments = (user) => {
   const [documents, setDocuments] = useState([]);
   const [activeDocId, setActiveDocId] = useState(null);
-  const [history, setHistory] = useState([]); // לשמירת מצבים קודמים (Undo)
+  // הסטייל ה"נוכחי" - מה שישפיע על האותיות הבאות
+  const [currentStyle, setCurrentStyle] = useState({ color: '#000000', fontSize: '16px', fontFamily: 'Arial' });
 
-  // טעינה ראשונית לפי משתמש - חלק ד'
   useEffect(() => {
     if (!user) return;
     const allDocs = storageService.getDocuments();
-    // סינון מפורש: המשתמש רואה רק את שלו
     const userDocs = allDocs.filter(doc => doc.owner === user.username);
     
     if (userDocs.length === 0) {
       const newDoc = {
         id: Date.now(),
-        text: '',
-        style: { color: '#000000', fontSize: '16px', fontFamily: 'Arial' },
+        content: [], // מערך של { char, style }
+        cursorIndex: 0,
         owner: user.username
       };
       setDocuments([newDoc]);
@@ -28,84 +27,40 @@ export const useDocuments = (user) => {
     }
   }, [user]);
 
-  // שמירה אוטומטית ל-Local Storage בכל שינוי - חלק ב'
-  useEffect(() => {
-    if (documents.length > 0) {
-      storageService.saveDocuments(documents);
-    }
-  }, [documents]);
-
-  // פונקציות עריכה - חלק א'
-  const saveToHistory = useCallback(() => {
-    setHistory(prev => [...prev, JSON.stringify(documents)].slice(-10)); // שומר 10 צעדים אחרונה
-  }, [documents]);
-
+  // הוספת תו עם הסטייל הנוכחי בלבד (פתרון לבעיה 1)
   const addChar = (char) => {
-    saveToHistory();
-    setDocuments(prev => prev.map(doc => 
-      doc.id === activeDocId ? { ...doc, text: doc.text + char } : doc
-    ));
-  };
-
-  const deleteChar = () => {
-    saveToHistory();
-    setDocuments(prev => prev.map(doc => 
-      doc.id === activeDocId ? { ...doc, text: doc.text.slice(0, -1) } : doc
-    ));
-  };
-
-  const deleteWord = () => {
-    saveToHistory();
     setDocuments(prev => prev.map(doc => {
       if (doc.id !== activeDocId) return doc;
-      const words = doc.text.trimEnd().split(' ');
-      words.pop();
-      return { ...doc, text: words.join(' ') + (words.length > 0 ? ' ' : '') };
+      const newContent = [...doc.content];
+      // מזריקים את האות עם הסטייל שנבחר ב-Toolbar ברגע זה
+      newContent.splice(doc.cursorIndex, 0, { char, style: { ...currentStyle } });
+      return { ...doc, content: newContent, cursorIndex: doc.cursorIndex + 1 };
     }));
   };
 
-  const clearDocument = () => {
-    saveToHistory();
-    setDocuments(prev => prev.map(doc => 
-      doc.id === activeDocId ? { ...doc, text: '' } : doc
-    ));
+  const deleteChar = () => {
+    setDocuments(prev => prev.map(doc => {
+      if (doc.id !== activeDocId || doc.cursorIndex === 0) return doc;
+      const newContent = [...doc.content];
+      newContent.splice(doc.cursorIndex - 1, 1);
+      return { ...doc, content: newContent, cursorIndex: doc.cursorIndex - 1 };
+    }));
   };
 
-  const undo = () => {
-    if (history.length === 0) return;
-    const lastState = JSON.parse(history[history.length - 1]);
-    setDocuments(lastState);
-    setHistory(prev => prev.slice(0, -1));
+  // פונקציה לעדכון הסטייל "מכאן והלאה"
+  const updateCurrentStyle = (newStyle) => {
+    setCurrentStyle(prev => ({ ...prev, ...newStyle }));
   };
 
-  // ניהול מסמכים מרובים - חלק ג'
-  const addNewDocument = () => {
-    const newDoc = {
-      id: Date.now(),
-      text: '',
-      style: { color: '#000000', fontSize: '16px', fontFamily: 'Arial' },
-      owner: user.username
-    };
-    setDocuments(prev => [...prev, newDoc]);
-    setActiveDocId(newDoc.id);
-  };
-
-  const closeDocument = (id) => {
-    const remaining = documents.filter(doc => doc.id !== id);
-    if (remaining.length === 0) return; // תמיד נשאר מסמך אחד לפחות
-    setDocuments(remaining);
-    if (activeDocId === id) setActiveDocId(remaining[0].id);
-  };
-
-  const updateStyle = (newStyle) => {
-    setDocuments(prev => prev.map(doc => 
-      doc.id === activeDocId ? { ...doc, style: { ...doc.style, ...newStyle } } : doc
-    ));
-  };
+  // שמירה אוטומטית
+  useEffect(() => {
+    if (documents.length > 0) storageService.saveDocuments(documents);
+  }, [documents]);
 
   return { 
     documents, activeDocId, setActiveDocId, 
-    addChar, deleteChar, deleteWord, clearDocument, 
-    undo, addNewDocument, closeDocument, updateStyle 
+    currentStyle, updateCurrentStyle,
+    addChar, deleteChar, addNewDocument: () => {}, // נשלים בהמשך
+    closeDocument: (id) => setDocuments(d => d.filter(x => x.id !== id))
   };
 };
