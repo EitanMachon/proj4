@@ -41,25 +41,38 @@ function App() {
     }
   };
 
-  if (!user) {
-    return (
-      <div className="login-overlay">
-        <form className="login-box" onSubmit={handleAuth}>
-          <div className="login-logo">✍️ <h2>Visual Editor Pro</h2></div>
-          <h3>{isRegistering ? 'יצירת משתמש חדש' : 'כניסת משתמש רשום'}</h3>
-          {error && <p className="auth-error">{error}</p>}
-          <input name="username" type="text" placeholder="שם משתמש" required />
-          <input name="password" type="password" placeholder="סיסמה" required />
-          <button type="submit" className="primary-btn login-btn">
-            {isRegistering ? 'הירשם עכשיו' : 'התחבר למערכת'}
-          </button>
-          <p className="auth-toggle" onClick={() => setIsRegistering(!isRegistering)}>
-            {isRegistering ? 'כבר יש לך חשבון? התחבר' : 'אין לך חשבון? הירשם כאן'}
-          </p>
-        </form>
-      </div>
-    );
-  }
+ 
+if (!user) {
+  return (
+    <div className="login-overlay">
+      <form className="login-box" onSubmit={handleAuth}>
+        <div className="login-logo">
+          <span className="logo-icon">✍️</span>
+          <h2>Visual Editor Pro</h2>
+        </div>
+        
+        <h3>{isRegistering ? 'יצירת משתמש חדש' : 'כניסת משתמש רשום'}</h3>
+        
+        {error && <div className="auth-error">{error}</div>}
+        
+        <input name="username" type="text" placeholder="שם משתמש" required />
+        <input name="password" type="password" placeholder="סיסמה" required />
+        
+        <button type="submit" className="primary-btn login-btn">
+          {isRegistering ? 'הירשם עכשיו' : 'התחבר למערכת'}
+        </button>
+        
+        {/* הטקסט הלחיץ */}
+        <p className="auth-toggle" onClick={() => {
+          setIsRegistering(!isRegistering);
+          setError(''); // מאפס את השגיאה כשעוברים מצב
+        }}>
+          {isRegistering ? 'כבר יש לך חשבון? התחבר' : 'אין לך חשבון? הירשם כאן'}
+        </p>
+      </form>
+    </div>
+  );
+}
 
   return (
     <div className="app-container">

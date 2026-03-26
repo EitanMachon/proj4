@@ -222,3 +222,38 @@ button {
   font-size: 1.1rem;
   margin-top: 1rem;
 }
+
+/* עיצוב כפתור ההחלפה בין התחברות להרשמה */
+.auth-toggle {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  cursor: pointer; /* זה מה שהופך אותו ל"לחיץ" ויזואלית */
+  font-weight: 600;
+  transition: all 0.2s;
+  user-select: none; /* מונע בחירה של הטקסט בטעות */
+}
+
+.auth-toggle:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+/* הודעות שגיאה במסך הלוגין */
+.auth-error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  border: 1px solid #fecaca;
+  animation: shake 0.4s ease-in-out;
+}
+
+/* אנימציה קטנה לשגיאה - נראה סופר מקצועי */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
