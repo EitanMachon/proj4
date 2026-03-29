@@ -7,6 +7,8 @@ const Toolbar = ({
   onNewDoc, 
   onUpdateStyle, 
   onSearchReplace,
+  onApplyStyleToAll, //
+  onDeleteWord,     
   currentStyle 
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,6 +29,9 @@ const Toolbar = ({
           </button>
           <button className="tool-btn secondary-btn" onClick={onUndo} title="בטל פעולה אחרונה">
             <span>↩️</span> Undo
+          </button>
+          <button className="tool-btn danger-btn" onClick={onDeleteWord} title="מחיקת המילה האחרונה">
+            <span>✂️</span> מחק מילה
           </button>
           <button className="tool-btn danger-btn" onClick={onClearAll}>
             <span>🗑️</span> נקה דף
@@ -64,6 +69,9 @@ const Toolbar = ({
         <div className="color-palette">
           <label className="color-label">צבע טקסט:</label>
           <div className="swatch-list">
+            <button className="tool-btn secondary-btn" style={{marginTop: '10px', width: '100%'}} onClick={onApplyStyleToAll}>
+              🪄 החל עיצוב על כל הטקסט
+            </button>
             {colors.map(c => (
               <div 
                 key={c} 

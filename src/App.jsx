@@ -24,7 +24,9 @@ const {
   closeDocument, 
   undo, 
   searchReplace,
-  clearDocument // <--- תוסיף את המילה הזו כאן!
+  clearDocument,    // <--- 
+  deleteWord,       // ---
+  applyStyleToAll   // <
 } = useDocuments(user);;
 
   // לוגיקת התחברות/הרשמה
@@ -110,7 +112,9 @@ if (!user) {
               onClearAll={clearDocument} 
               onNewDoc={addNewDocument}
               onUpdateStyle={updateCurrentStyle}
-              onSearchReplace={searchReplace} // חיבור הפונקציה החדשה
+              onSearchReplace={searchReplace} 
+              onDeleteWord={deleteWord}        
+              onApplyStyleToAll={applyStyleToAll}
               currentStyle={currentStyle}
             />
           <Keyboard onKeyClick={addChar} onDeleteChar={deleteChar} />

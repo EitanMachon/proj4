@@ -116,6 +116,41 @@ export const useDocuments = (user) => {
     ));
   };
 
+// 1. מחיקת מילה (Delete Word)
+const deleteWord = () => {
+  saveToHistory();
+  setDocuments(prev => prev.map(doc => {
+    if (doc.id !== activeDocId || doc.content.length === 0) return doc;
+    
+    const content = [...doc.content];
+    // מוצאים את המיקום של הרווח האחרון לפני הסמן
+    const lastSpaceIndex = content.slice(0, doc.cursorIndex - 1).findLastIndex(item => item.char === ' ');
+    
+    // מוחקים מהרווח (או מתחילת המסמך) ועד הסמן
+    const deleteFrom = lastSpaceIndex === -1 ? 0 : lastSpaceIndex + 1;
+    const deleteCount = doc.cursorIndex - deleteFrom;
+    
+    content.splice(deleteFrom, deleteCount);
+    return { ...doc, content, cursorIndex: deleteFrom };
+  }));
+};
+
+// 2. שינוי סטייל לכל הטקסט הקיים (Global Style)
+const applyStyleToAll = () => {
+  saveToHistory();
+  setDocuments(prev => prev.map(doc => {
+    if (doc.id !== activeDocId) return doc;
+    
+    // עוברים על כל האותיות במסמך ומשנים להן את הסטייל לזה שמוגדר כרגע ב-Toolbar
+    const newContent = doc.content.map(item => ({
+      ...item,
+      style: { ...currentStyle }
+    }));
+    
+    return { ...doc, content: newContent };
+  }));
+};
+
   // --- 4. חשיפת הפונקציות החוצה ---
   return { 
     documents, 
