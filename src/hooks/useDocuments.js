@@ -164,6 +164,7 @@ const applyStyleToAll = () => {
     searchReplace, 
     addNewDocument, 
     closeDocument, 
+    deleteWord, 
     clearDocument
   };
 };
