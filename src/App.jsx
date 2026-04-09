@@ -6,47 +6,60 @@ import Toolbar from './Toolbar/Toolbar';
 import Keyboard from './Keyboard/Keyboard';
 import './App.css';
 
+/**
+ * הקומפוננטה הראשית של האפליקציה - App.
+ * אחראית על ניהול המצב הגלובלי (משתמש מחובר) וחיבור בין חלקי המערכת.
+ */
 function App() {
-  const [user, setUser] = useState(null);
-  const [isRegistering, setIsRegistering] = useState(false); // מצב הרשמה
-  const [error, setError] = useState('');
+  // --- ניהול מצב (States) ---
+  const [user, setUser] = useState(null); // המשתמש המחובר כרגע (null אם איש לא מחובר)
+  const [isRegistering, setIsRegistering] = useState(false); // האם המשתמש נמצא במצב "הרשמה" או "התחברות"
+  const [error, setError] = useState(''); // הודעות שגיאה עבור תהליך האימות
 
-  // בתוך src/App.jsx
-const {
-  documents, 
-  activeDocId, 
-  setActiveDocId, 
-  currentStyle, 
-  updateCurrentStyle,
-  addChar, 
-  deleteChar, 
-  addNewDocument, 
-  closeDocument, 
-  undo, 
-  searchReplace,
-  clearDocument,    // <--- 
-  deleteWord,       // ---
-  applyStyleToAll   // <
-} = useDocuments(user);;
+  /**
+   * שימוש ב-Custom Hook לניהול כל הלוגיקה של המסמכים.
+   * ה-Hook מקבל את ה-user הנוכחי כדי לדעת איזה מידע לטעון מה-Storage.
+   */
+  const {
+    documents, 
+    activeDocId, 
+    setActiveDocId, 
+    currentStyle, 
+    updateCurrentStyle,
+    addChar, 
+    deleteChar, 
+    addNewDocument, 
+    closeDocument, 
+    undo, 
+    searchReplace,
+    clearDocument,    
+    deleteWord,       
+    applyStyleToAll   
+  } = useDocuments(user);
 
-  // לוגיקת התחברות/הרשמה
+  /**
+   * handleAuth: פונקציה לטיפול באירוע שליחת טופס (התחברות או הרשמה).
+   * @param {Event} e - אירוע ה-Submit של הטופס.
+   */
   const handleAuth = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // מניעת רענון הדף האוטומטי של הטופס
     const username = e.target.username.value;
     const password = e.target.password.value;
 
     if (isRegistering) {
+      // תהליך הרשמה: פנייה לשירות המשתמשים
       const res = userService.register(username, password);
       if (res.success) {
-        setIsRegistering(false);
+        setIsRegistering(false); // העברה למסך התחברות לאחר הרשמה מוצלחת
         setError('נרשמת בהצלחה! כעת התחבר');
       } else {
         setError(res.msg);
       }
     } else {
+      // תהליך התחברות: אימות פרטים
       const res = userService.login(username, password);
       if (res.success) {
-        setUser(res.user);
+        setUser(res.user); // עדכון ה-State של המשתמש והכניסה לאפליקציה
         setError('');
       } else {
         setError(res.msg);
@@ -54,41 +67,49 @@ const {
     }
   };
 
- 
-if (!user) {
-  return (
-    <div className="login-overlay">
-      <form className="login-box" onSubmit={handleAuth}>
-        <div className="login-logo">
-          <span className="logo-icon">✍️</span>
-          <h2>Visual Editor Pro</h2>
-        </div>
-        
-        <h3>{isRegistering ? 'יצירת משתמש חדש' : 'כניסת משתמש רשום'}</h3>
-        
-        {error && <div className="auth-error">{error}</div>}
-        
-        <input name="username" type="text" placeholder="שם משתמש" required />
-        <input name="password" type="password" placeholder="סיסמה" required />
-        
-        <button type="submit" className="primary-btn login-btn">
-          {isRegistering ? 'הירשם עכשיו' : 'התחבר למערכת'}
-        </button>
-        
-        {/* הטקסט הלחיץ */}
-        <p className="auth-toggle" onClick={() => {
-          setIsRegistering(!isRegistering);
-          setError(''); // מאפס את השגיאה כשעוברים מצב
-        }}>
-          {isRegistering ? 'כבר יש לך חשבון? התחבר' : 'אין לך חשבון? הירשם כאן'}
-        </p>
-      </form>
-    </div>
-  );
-}
+  /**
+   * רינדור מותנה (Conditional Rendering):
+   * אם אין משתמש מחובר (user === null), יוצג מסך הלוגין/הרשמה בלבד.
+   */
+  if (!user) {
+    return (
+      <div className="login-overlay">
+        <form className="login-box" onSubmit={handleAuth}>
+          <div className="login-logo">
+            <span className="logo-icon">✍️</span>
+            <h2>Visual Editor Pro</h2>
+          </div>
+          
+          <h3>{isRegistering ? 'יצירת משתמש חדש' : 'כניסת משתמש רשום'}</h3>
+          
+          {error && <div className="auth-error">{error}</div>}
+          
+          <input name="username" type="text" placeholder="שם משתמש" required />
+          <input name="password" type="password" placeholder="סיסמה" required />
+          
+          <button type="submit" className="primary-btn login-btn">
+            {isRegistering ? 'הירשם עכשיו' : 'התחבר למערכת'}
+          </button>
+          
+          <p className="auth-toggle" onClick={() => {
+            setIsRegistering(!isRegistering);
+            setError(''); 
+          }}>
+            {isRegistering ? 'כבר יש לך חשבון? התחבר' : 'אין לך חשבון? הירשם כאן'}
+          </p>
+        </form>
+      </div>
+    );
+  }
 
+  /**
+   * המבנה הראשי של העורך (לאחר התחברות מוצלחת).
+   * האפליקציה מחולקת ל-Header, אזור תצוגה מרכזי (DisplayArea),
+   * וסרגל צד המכיל את ה-Toolbar וה-Keyboard.
+   */
   return (
     <div className="app-container">
+      {/* כותרת האפליקציה ופרטי משתמש */}
       <header className="app-header">
         <div className="logo-section"><h1>Visual Editor</h1><span className="version-badge">v2.0</span></div>
         <div className="user-section">
@@ -97,8 +118,10 @@ if (!user) {
         </div>
       </header>
 
+      {/* פריסה מרכזית (Layout) */}
       <div className="main-layout-split">
         <main className="app-main">
+          {/* אזור הצגת המסמכים והכרטיסיות */}
           <DisplayArea 
             documents={documents} 
             activeDocId={activeDocId} 
@@ -106,8 +129,10 @@ if (!user) {
             onCloseDoc={closeDocument}
           />
         </main>
+        
         <aside className="app-sidebar">
-                      <Toolbar 
+            {/* סרגל כלים: מקבל פונקציות לעדכון סטייל ופעולות מתקדמות */}
+            <Toolbar 
               onUndo={undo} 
               onClearAll={clearDocument} 
               onNewDoc={addNewDocument}
@@ -117,6 +142,7 @@ if (!user) {
               onApplyStyleToAll={applyStyleToAll}
               currentStyle={currentStyle}
             />
+          {/* מקלדת וירטואלית: מפעילה את פונקציות הוספת/מחיקת תו */}
           <Keyboard onKeyClick={addChar} onDeleteChar={deleteChar} />
         </aside>
       </div>

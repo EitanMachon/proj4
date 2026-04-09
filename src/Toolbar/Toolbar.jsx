@@ -1,26 +1,34 @@
 import React, { useState } from 'react';
 import './Toolbar.css';
 
+/**
+ * קומפוננטת ה-Toolbar (סרגל הכלים).
+ * משמשת כמרכז הבקרה הוויזואלי של האפליקציה.
+ * הקומפוננטה מקבלת פונקציות (Callbacks) מה-App ומפעילה אותן לפי דרישת המשתמש.
+ */
 const Toolbar = ({ 
-  onUndo, 
-  onClearAll, 
-  onNewDoc, 
-  onUpdateStyle, 
-  onSearchReplace,
-  onApplyStyleToAll, //
-  onDeleteWord,     
-  currentStyle 
+  onUndo,              // פונקציה לביטול פעולה אחרונה
+  onClearAll,          // פונקציה לניקוי כל הטקסט במסמך
+  onNewDoc,            // פונקציה ליצירת מסמך חדש
+  onUpdateStyle,       // פונקציה לעדכון הסטייל הנוכחי (לכתיבה מכאן והלאה)
+  onSearchReplace,     // פונקציה לחיפוש והחלפה גלובלית של תווים
+  onApplyStyleToAll,   // פונקציה להחלת הסטייל הנוכחי על כל הטקסט הקיים
+  onDeleteWord,        // פונקציה למחיקת המילה האחרונה
+  currentStyle         // אובייקט הסטייל הפעיל כרגע (צבע, גופן, גודל)
 }) => {
+  // State מקומי לניהול שדות הקלט של החיפוש וההחלפה
   const [searchTerm, setSearchTerm] = useState('');
   const [replaceTerm, setReplaceTerm] = useState('');
 
+  // רשימות קבועות של אפשרויות עיצוב
   const fonts = ['Arial', 'Courier New', 'Georgia', 'Times New Roman', 'Verdana', 'Tahoma'];
   const sizes = ['12px', '14px', '16px', '18px', '24px', '32px', '48px'];
   const colors = ['#0f172a', '#ef4444', '#22c55e', '#2563eb', '#f59e0b', '#8b5cf6', '#ec4899'];
 
   return (
     <div className="toolbar-container">
-      {/* קבוצה 1: ניהול מסמכים ופעולות על המערכת */}
+      
+      {/* קבוצה 1: ניהול מסמכים ופעולות עריכה בסיסיות */}
       <section className="tool-section">
         <h3 className="section-label">ניהול קבצים ופעולות</h3>
         <div className="tool-grid-2">
@@ -30,6 +38,7 @@ const Toolbar = ({
           <button className="tool-btn secondary-btn" onClick={onUndo} title="בטל פעולה אחרונה">
             <span>↩️</span> Undo
           </button>
+          {/* כפתור מחיקת מילה - קורא לפונקציית הלוגיקה שבנינו ב-Hook */}
           <button className="tool-btn danger-btn" onClick={onDeleteWord} title="מחיקת המילה האחרונה">
             <span>✂️</span> מחק מילה
           </button>
@@ -39,10 +48,11 @@ const Toolbar = ({
         </div>
       </section>
 
-      {/* קבוצה 2: עיצוב טקסט (Typography) */}
+      {/* קבוצה 2: עיצוב טקסט (Typography) - שינוי גופן, גודל וצבע */}
       <section className="tool-section">
         <h3 className="section-label">עיצוב וטיפוגרפיה</h3>
         <div className="styling-controls">
+          {/* בחירת גופן */}
           <div className="select-group">
             <label>גופן:</label>
             <select 
@@ -54,6 +64,7 @@ const Toolbar = ({
             </select>
           </div>
 
+          {/* בחירת גודל גופן */}
           <div className="select-group">
             <label>גודל:</label>
             <select 
@@ -66,12 +77,15 @@ const Toolbar = ({
           </div>
         </div>
 
+        {/* פלטת צבעים וכפתור עדכון גלובלי */}
         <div className="color-palette">
           <label className="color-label">צבע טקסט:</label>
           <div className="swatch-list">
+            {/* כפתור קסם: מעדכן את כל הטקסט שכבר נכתב לסטייל הנבחר */}
             <button className="tool-btn secondary-btn" style={{marginTop: '10px', width: '100%'}} onClick={onApplyStyleToAll}>
               🪄 החל עיצוב על כל הטקסט
             </button>
+            {/* יצירת כפתורי הצבעים בצורה דינמית מהמערך */}
             {colors.map(c => (
               <div 
                 key={c} 
@@ -93,7 +107,7 @@ const Toolbar = ({
             placeholder="חפש תו..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            maxLength="1"
+            maxLength="1" // הגבלה לתו בודד כפי שנדרש
           />
           <span className="arrow-icon">⬅️</span>
           <input 
@@ -108,6 +122,7 @@ const Toolbar = ({
           className="tool-btn apply-btn"
           onClick={() => {
             onSearchReplace(searchTerm, replaceTerm);
+            // איפוס שדות הקלט לאחר הביצוע
             setSearchTerm(''); setReplaceTerm('');
           }}
         >
