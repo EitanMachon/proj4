@@ -143,7 +143,11 @@ function App() {
               currentStyle={currentStyle}
             />
           {/* מקלדת וירטואלית: מפעילה את פונקציות הוספת/מחיקת תו */}
-          <Keyboard onKeyClick={addChar} onDeleteChar={deleteChar} />
+          <Keyboard 
+                onKeyClick={addChar} 
+                onDeleteChar={deleteChar} 
+                onDeleteWord={deleteWord} // <--- תוסיף את זה!
+              />
         </aside>
       </div>
     </div>
