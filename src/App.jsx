@@ -12,7 +12,10 @@ import './App.css';
  */
 function App() {
   // --- ניהול מצב (States) ---
-  const [user, setUser] = useState(null); // המשתמש המחובר כרגע (null אם איש לא מחובר)
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('activeUser');
+    return savedUser ? JSON.parse(savedUser) : null;
+}); // המשתמש המחובר כרגע (null אם איש לא מחובר)
   const [isRegistering, setIsRegistering] = useState(false); // האם המשתמש נמצא במצב "הרשמה" או "התחברות"
   const [error, setError] = useState(''); // הודעות שגיאה עבור תהליך האימות
 
@@ -60,6 +63,7 @@ function App() {
       const res = userService.login(username, password);
       if (res.success) {
         setUser(res.user); // עדכון ה-State של המשתמש והכניסה לאפליקציה
+       localStorage.setItem('activeUser', JSON.stringify(res.user));
         setError('');
       } else {
         setError(res.msg);
@@ -108,7 +112,7 @@ function App() {
    * וסרגל צד המכיל את ה-Toolbar וה-Keyboard.
    */
   return (
-    <div className="app-container">
+    <div className="app-container" key={user.username}>
       {/* כותרת האפליקציה ופרטי משתמש */}
       <header className="app-header">
         <div className="logo-section"><h1>Visual Editor</h1><span className="version-badge">v2.0</span></div>
