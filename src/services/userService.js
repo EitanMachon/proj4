@@ -71,3 +71,6 @@ export const userService = {
         return data ? JSON.parse(data) : [];
     }
 };
+
+// תוודא שהשורה הזו קיימת בסוף הקובץ:
+export default userService;
