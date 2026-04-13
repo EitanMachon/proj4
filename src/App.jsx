@@ -5,6 +5,7 @@ import userService from './services/userService';
 import DisplayArea from "./DisplayArea/DisplayArea";
 import Toolbar from "./Toolbar/Toolbar";
 import Keyboard from "./Keyboard/Keyboard";
+import './App.css'; // או איך שקראת לקובץ ה-CSS הראשי שלך
 /**
  * קומפוננטת העורך - נטענת רק כשיש משתמש מחובר.
  * ה-key שמועבר אליה מבטיח שהיא תתרנדר מחדש (Remount) בכל החלפת משתמש.
