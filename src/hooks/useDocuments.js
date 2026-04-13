@@ -221,3 +221,6 @@ const applyStyleToAll = () => {
     clearDocument
   };
 };
+
+// השורה הזו אומרת לעולם: "זה הדבר המרכזי שהקובץ הזה נותן"
+export default useDocuments;

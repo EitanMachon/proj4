@@ -150,5 +150,5 @@ function App() {
   return <MainEditor key={user.username} user={user} setUser={setUser} />;
 }
 
+export default App;
 // השורה הזו אומרת לעולם: "זה הדבר המרכזי שהקובץ הזה נותן"
-export default useDocuments;
