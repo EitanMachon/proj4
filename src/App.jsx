@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-// הסרנו את ה- { } מכל השורות האלו:
+// ייבוא הלוגיקה והשירותים של האפליקציה
 import useDocuments from './hooks/useDocuments'; 
 import userService from './services/userService';
 import DisplayArea from "./DisplayArea/DisplayArea";
 import Toolbar from "./Toolbar/Toolbar";
 import Keyboard from "./Keyboard/Keyboard";
-import './App.css'; // או איך שקראת לקובץ ה-CSS הראשי שלך
+import './App.css'; 
+
 /**
- * קומפוננטת העורך - נטענת רק כשיש משתמש מחובר.
- * ה-key שמועבר אליה מבטיח שהיא תתרנדר מחדש (Remount) בכל החלפת משתמש.
+ * קומפוננטת MainEditor:
+ * מרכזת את כל ממשק העריכה. היא נפרדת מ-App כדי לאפשר 
+ * טעינה מחדש נקייה (Remount) של כל הלוגיקה ברגע שמשתמש מתחבר.
  */
 const MainEditor = ({ user, setUser }) => {
-  // השורה של כל המשתנים עברה לכאן - היא תרוץ רק כשיש user אמיתי
+  // חשיפת כל הפונקציות והנתונים מתוך ה-Custom Hook
   const {
     documents, 
     activeDocId, 
@@ -29,6 +31,7 @@ const MainEditor = ({ user, setUser }) => {
     applyStyleToAll   
   } = useDocuments(user);
 
+  // פונקציית התנתקות: מאפסת את המשתמש ב-State ומוחקת אותו מהזיכרון המקומי
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('activeUser');
@@ -36,7 +39,7 @@ const MainEditor = ({ user, setUser }) => {
 
   return (
     <div className="app-container">
-      {/* כותרת האפליקציה ופרטי משתמש */}
+      {/* סרגל עליון: לוגו ופרטי המשתמש המחובר */}
       <header className="app-header">
         <div className="logo-section">
           <h1>Visual Editor</h1>
@@ -48,9 +51,10 @@ const MainEditor = ({ user, setUser }) => {
         </div>
       </header>
 
-      {/* פריסה מרכזית (Layout) */}
+      {/* מבנה העמוד: מחולק לאזור תצוגה ראשי וסרגל צד לשליטה ומקלדת */}
       <div className="main-layout-split">
         <main className="app-main">
+          {/* אזור הצגת המסמכים (הדפים) */}
           <DisplayArea 
             documents={documents} 
             activeDocId={activeDocId} 
@@ -60,6 +64,7 @@ const MainEditor = ({ user, setUser }) => {
         </main>
         
         <aside className="app-sidebar">
+            {/* סרגל כלים: כפתורי פעולה (Undo, צבעים, חיפוש) */}
             <Toolbar 
               onUndo={undo} 
               onClearAll={clearDocument} 
@@ -70,6 +75,7 @@ const MainEditor = ({ user, setUser }) => {
               onApplyStyleToAll={applyStyleToAll}
               currentStyle={currentStyle}
             />
+          {/* המקלדת הווירטואלית להקלדה ומחיקה */}
           <Keyboard 
             onKeyClick={addChar} 
             onDeleteChar={deleteChar} 
@@ -82,15 +88,22 @@ const MainEditor = ({ user, setUser }) => {
 };
 
 /**
- * הקומפוננטה הראשית - מנהלת את הכניסה למערכת
+ * קומפוננטת App:
+ * הקומפוננטה הראשית (Root) שמנהלת את הכניסה למערכת.
+ * מחליטה האם להציג את מסך הלוגין או את העורך.
  */
 function App() {
+  // ניהול המשתמש, מצב הרשמה והודעות שגיאה
   const [user, setUser] = useState(null); 
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState('');
 
+  /**
+   * handleAuth: מטפלת בשליחת טופס ההתחברות או ההרשמה.
+   * פונה ל-userService ומעדכנת את המצב בהתאם לתשובה.
+   */
   const handleAuth = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // מניעת רענון הדף ב-Submit
     const username = e.target.username.value;
     const password = e.target.password.value;
 
@@ -106,6 +119,7 @@ function App() {
       const res = userService.login(username, password);
       if (res.success) {
         setUser(res.user);
+        // שמירת המשתמש בדפדפן כדי לזכור אותו ברענן (Persistence)
         localStorage.setItem('activeUser', JSON.stringify(res.user));
         setError('');
       } else {
@@ -114,7 +128,7 @@ function App() {
     }
   };
 
-  // רינדור מותנה: אם אין משתמש - הצג מסך לוגין
+  // רינדור מותנה: אם המשתנה user ריק, מציגים את מסך הכניסה
   if (!user) {
     return (
       <div className="login-overlay">
@@ -146,10 +160,12 @@ function App() {
     );
   }
 
-  // אם יש משתמש - הצג את העורך. 
-  // ה-key=user.username מבטיח טעינה מחדש נקייה של ה-Hook והנתונים.
+  /**
+   * אם המשתמש מחובר, מציגים את המערכת.
+   * שימוש ב-key={user.username} מבטיח שכל המערכת תתאפס ותיבנה מחדש
+   * עם הנתונים של המשתמש הספציפי שנכנס.
+   */
   return <MainEditor key={user.username} user={user} setUser={setUser} />;
 }
 
 export default App;
-// השורה הזו אומרת לעולם: "זה הדבר המרכזי שהקובץ הזה נותן"
