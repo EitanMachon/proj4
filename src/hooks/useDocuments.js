@@ -205,12 +205,19 @@ const applyStyleToAll = () => {
 };
 
   // --- 4. חשיפת הפונקציות החוצה ---
+ // --- 4. חשיפת הפונקציות החוצה ---
   return { 
     documents, 
     activeDocId, 
     setActiveDocId, 
     currentStyle, 
-    updateCurrentStyle: setCurrentStyle,
+    
+    // תיקון בעיה #3: מיזוג העיצוב הישן עם השינוי החדש (כדי שלא יתאפס)
+    updateCurrentStyle: (newStyleUpdates) => setCurrentStyle(prevStyle => ({ 
+      ...prevStyle, 
+      ...newStyleUpdates 
+    })),
+    
     addChar, 
     deleteChar, 
     undo, 
@@ -218,9 +225,11 @@ const applyStyleToAll = () => {
     addNewDocument, 
     closeDocument, 
     deleteWord, 
-    clearDocument
+    clearDocument,
+    
+    // תיקון בעיה #2: עכשיו אנחנו מייצאים את הפונקציה החוצה!
+    applyStyleToAll
   };
 };
 
-// השורה הזו אומרת לעולם: "זה הדבר המרכזי שהקובץ הזה נותן"
 export default useDocuments;

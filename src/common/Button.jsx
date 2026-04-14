@@ -21,3 +21,4 @@ const Button = ({ label, onClick, className = "", style = {} }) => {
 };
 
 export default Button;
+

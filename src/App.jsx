@@ -13,6 +13,8 @@ import './App.css';
  * טעינה מחדש נקייה (Remount) של כל הלוגיקה ברגע שמשתמש מתחבר.
  */
 const MainEditor = ({ user, setUser }) => {
+  
+  
   // חשיפת כל הפונקציות והנתונים מתוך ה-Custom Hook
   const {
     documents, 
@@ -38,6 +40,7 @@ const MainEditor = ({ user, setUser }) => {
   };
 
   return (
+    
     <div className="app-container">
       {/* סרגל עליון: לוגו ופרטי המשתמש המחובר */}
       <header className="app-header">
@@ -84,7 +87,9 @@ const MainEditor = ({ user, setUser }) => {
         </aside>
       </div>
     </div>
+       
   );
+  
 };
 
 /**
