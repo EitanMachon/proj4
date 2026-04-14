@@ -116,18 +116,40 @@ const updateAndSaveDocs = (nextDocs) => {
   };
 
   // ניהול מסמכים (הוספה, סגירה, ניקוי)
-  const addNewDocument = () => {
-    const newDoc = { id: Date.now(), content: [], cursorIndex: 0, owner: user.username };
-    setDocuments(prev => [...prev, newDoc]);
-    setActiveDocId(newDoc.id);
+ const closeDocument = (id) => {
+    // 1. מחשבים מראש את הרשימה החדשה ללא המסמך שמחקנו
+    const nextDocs = documents.filter(doc => doc.id !== id);
+    
+    // 2. משתמשים בפונקציית העזר כדי לעדכן גם את ה-State וגם את ה-Storage
+    updateAndSaveDocs(nextDocs);
+
+    // 3. מעדכנים את המזהה הפעיל במידת הצורך
+    if (id === activeDocId && nextDocs.length > 0) {
+      setActiveDocId(nextDocs[0].id);
+    }
   };
 
-  const closeDocument = (id) => {
-    setDocuments(prev => {
-      const filtered = prev.filter(doc => doc.id !== id);
-      if (id === activeDocId && filtered.length > 0) setActiveDocId(filtered[0].id);
-      return filtered;
-    });
+  const renameDocument = (id, newTitle) => {
+    // יוצרים מערך מסמכים חדש שבו רק המסמך המבוקש מקבל את השם החדש
+    const nextDocs = documents.map(doc => 
+      doc.id === id ? { ...doc, title: newTitle } : doc
+    );
+    
+    // מעדכנים את ה-State ושומרים ל-LocalStorage
+    updateAndSaveDocs(nextDocs);
+  };
+
+  const addNewDocument = () => {
+    const newDoc = { id: Date.now(), content: [], cursorIndex: 0, owner: user.username };
+    
+    // 1. יוצרים את המערך החדש שכולל את המסמך החדש
+    const nextDocs = [...documents, newDoc];
+    
+    // 2. עדכון ושמירה אקטיבית
+    updateAndSaveDocs(nextDocs);
+    
+    // 3. הפיכת המסמך החדש לפעיל
+    setActiveDocId(newDoc.id);
   };
 
  const clearDocument = () => {
@@ -204,6 +226,83 @@ const applyStyleToAll = () => {
   updateAndSaveDocs(nextDocs);
 };
 
+
+const moveCursor = (direction) => {
+    setDocuments(prevDocs => prevDocs.map(doc => {
+      if (doc.id !== activeDocId) return doc;
+
+      let newIndex = doc.cursorIndex;
+      const content = doc.content;
+      const length = content.length;
+
+      switch (direction) {
+        case 'RIGHT':
+          // ימינה (קדימה בטקסט)
+          if (newIndex < length) newIndex--;
+          break;
+
+        case 'LEFT':
+          // שמאלה (אחורה בטקסט)
+          if (newIndex > 0) newIndex++;
+          break;
+
+        case 'DOWN':
+          // מציאת השורה הנוכחית והבאה היא מורכבת במערך שטוח.
+          // גישה בסיסית: חפש את תחילת השורה הבאה (ה-`\n` הבא) פלוס המרחק הנוכחי מתחילת השורה
+          const nextNewLineDown = content.findIndex((item, i) => i >= doc.cursorIndex && item.char === '\n');
+          if (nextNewLineDown !== -1) {
+              // מצאנו שורה חדשה מתחתינו
+              // חישוב המרחק של הסמן מתחילת השורה הנוכחית
+              const prevNewLine = content.findLastIndex((item, i) => i < doc.cursorIndex && item.char === '\n');
+              const offsetFromStartOfLine = doc.cursorIndex - (prevNewLine === -1 ? 0 : prevNewLine + 1);
+              
+              // הוספת האופסט לתחילת השורה הבאה (או עד סוף השורה הבאה אם היא קצרה מדי)
+              const endOfNextLine = content.findIndex((item, i) => i > nextNewLineDown && item.char === '\n');
+              const targetIndex = nextNewLineDown + 1 + offsetFromStartOfLine;
+              
+              newIndex = endOfNextLine !== -1 ? Math.min(targetIndex, endOfNextLine) : Math.min(targetIndex, length);
+          } else {
+              // אין שורה למטה, נלך לסוף המסמך
+              newIndex = length;
+          }
+          break;
+
+        case 'UP':
+           // חפש את תחילת השורה הקודמת
+          const prevNewLineUp = content.findLastIndex((item, i) => i < doc.cursorIndex && item.char === '\n');
+          if (prevNewLineUp !== -1) {
+              // מצאנו שורה קודמת מעלינו
+              const startOfCurrentLine = prevNewLineUp + 1;
+              const offsetFromStart = doc.cursorIndex - startOfCurrentLine;
+
+              const startOfPrevLine = content.findLastIndex((item, i) => i < prevNewLineUp && item.char === '\n');
+              const actualStartOfPrev = startOfPrevLine === -1 ? 0 : startOfPrevLine + 1;
+
+              // ננסה לשים את הסמן באותו מרחק, או בסוף השורה הקודמת (מה שקצר יותר)
+              newIndex = Math.min(actualStartOfPrev + offsetFromStart, prevNewLineUp);
+          } else {
+               // אין שורה מעל, נלך לתחילת המסמך
+              newIndex = 0;
+          }
+          break;
+          
+        default:
+          break;
+      }
+
+      return { ...doc, cursorIndex: newIndex };
+    }));
+  };
+// הפונקציה הקלאסית: מקבלת את העיצוב החדש וממזגת אותו עם הקיים
+  function updateCurrentStyle(newStyleUpdates) {
+    setCurrentStyle(function(prevStyle) {
+      return { 
+        ...prevStyle, 
+        ...newStyleUpdates 
+      };
+    });
+  }
+
   // --- 4. חשיפת הפונקציות החוצה ---
  // --- 4. חשיפת הפונקציות החוצה ---
   return { 
@@ -211,21 +310,17 @@ const applyStyleToAll = () => {
     activeDocId, 
     setActiveDocId, 
     currentStyle, 
-    
-    // תיקון בעיה #3: מיזוג העיצוב הישן עם השינוי החדש (כדי שלא יתאפס)
-    updateCurrentStyle: (newStyleUpdates) => setCurrentStyle(prevStyle => ({ 
-      ...prevStyle, 
-      ...newStyleUpdates 
-    })),
-    
+    updateCurrentStyle,
     addChar, 
     deleteChar, 
     undo, 
     searchReplace, 
     addNewDocument, 
-    closeDocument, 
+    closeDocument,
+    renameDocument, 
     deleteWord, 
     clearDocument,
+    moveCursor,
     
     // תיקון בעיה #2: עכשיו אנחנו מייצאים את הפונקציה החוצה!
     applyStyleToAll

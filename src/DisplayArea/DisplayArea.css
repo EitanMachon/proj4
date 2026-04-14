@@ -20,7 +20,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  
 }
 
 .document-card:hover {
@@ -72,6 +72,8 @@
   white-space: pre-wrap;
   word-break: break-all;
   line-height: 1.5;
+  overflow-y: auto; /* <--- הוספתי גלילה אנכית כשיש צורך */
+  padding-bottom: 25px; /* <--- מרווח נשימה למטה כדי שהשורות האחרונות ייראו טוב */
 }
 
 .text-cursor {

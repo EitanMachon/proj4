@@ -2,7 +2,7 @@ import { layouts } from "../data/keyboardLayouts";
 import React, { useState } from 'react';
 import './Keyboard.css';
 
-const Keyboard = ({ onKeyClick, onDeleteChar, onDeleteWord }) => {
+const Keyboard = ({ onKeyClick, onDeleteChar, onDeleteWord, onMoveCursor }) => {
   const [layoutIndex, setLayoutIndex] = useState(0); // 0=עברית, 1=אנגלית, 2=אימוג'י
 
   // הגנה: אם layouts לא נטען, נציג הודעה
@@ -51,6 +51,12 @@ const Keyboard = ({ onKeyClick, onDeleteChar, onDeleteWord }) => {
         <button className="key-tile special-key space-bar" onClick={() => onKeyClick(' ')}>
           Space
         </button>
+      </div>
+      <div className="arrows-container">
+         <button onClick={() => onMoveCursor('UP')}>⬆️</button>
+         <button onClick={() => onMoveCursor('DOWN')}>⬇️</button>
+         <button onClick={() => onMoveCursor('RIGHT')}>➡️</button>
+         <button onClick={() => onMoveCursor('LEFT')}>⬅️</button>
       </div>
     </div>
   );

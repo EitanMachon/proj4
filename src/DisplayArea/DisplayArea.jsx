@@ -2,7 +2,7 @@ import React from 'react';
 import './DisplayArea.css';
 
 // קומפוננטת אזור התצוגה - מקבלת את רשימת המסמכים, איזה מהם פעיל, ופונקציות לניהול שלהם
-const DisplayArea = ({ documents = [], activeDocId, onSelect, onCloseDoc }) => {
+const DisplayArea = ({ documents = [], activeDocId, onSelect, onCloseDoc, onRenameDoc }) => {
   return (
     <div className="display-area-container">
       {/* עוברים על כל המסמכים הפתוחים ומרנדרים כל אחד ככרטיסייה */}
@@ -16,11 +16,23 @@ const DisplayArea = ({ documents = [], activeDocId, onSelect, onCloseDoc }) => {
         >
           {/* אזור הכותרת של המסמך */}
           <div className="doc-header">
-            {/* מציג את מספר המסמך על ידי לקיחת 4 התווים האחרונים של ה-ID */}
-            <span className="doc-id">📄 מסמך {doc.id.toString().slice(-4)}</span>
+            <span 
+              className="doc-id" 
+              title="לחץ לשינוי שם"
+              style={{ cursor: 'pointer' }}
+              onClick={(e) => {
+                e.stopPropagation(); // מונע בחירה של המסמך בזמן שמשנים לו שם
+                // פתיחת חלון קופץ מובנה של הדפדפן לקבלת השם החדש
+                const newName = window.prompt('הכנס שם חדש למסמך:', doc.title || 'מסמך חדש');
+                // אם המשתמש הכניס שם ולא לחץ "ביטול"
+                if (newName && newName.trim() !== '') {
+                  onRenameDoc(doc.id, newName);
+                }
+              }}
+            >
+              📄 {doc.title || `מסמך ${doc.id.toString().slice(-4)}`} <span style={{ fontSize: '0.8em', marginLeft: '5px' }}>✏️</span>
+            </span>
             
-            {/* כפתור סגירה. עצירת הבועה (stopPropagation) מונעת מצב שבו לחיצה על X 
-                תפעיל גם את בחירת המסמך (onClick של העוטף) */}
             <button className="close-btn" onClick={(e) => { e.stopPropagation(); onCloseDoc(doc.id); }}>&times;</button>
           </div>
 

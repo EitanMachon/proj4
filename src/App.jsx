@@ -26,11 +26,13 @@ const MainEditor = ({ user, setUser }) => {
     deleteChar, 
     addNewDocument, 
     closeDocument, 
+    renameDocument,
     undo, 
     searchReplace,
     clearDocument,    
     deleteWord,       
-    applyStyleToAll   
+    applyStyleToAll,
+    moveCursor   
   } = useDocuments(user);
 
   // פונקציית התנתקות: מאפסת את המשתמש ב-State ומוחקת אותו מהזיכרון המקומי
@@ -63,6 +65,7 @@ const MainEditor = ({ user, setUser }) => {
             activeDocId={activeDocId} 
             onSelect={setActiveDocId}
             onCloseDoc={closeDocument}
+            onRenameDoc={renameDocument}
           />
         </main>
         
@@ -83,6 +86,7 @@ const MainEditor = ({ user, setUser }) => {
             onKeyClick={addChar} 
             onDeleteChar={deleteChar} 
             onDeleteWord={deleteWord} 
+            onMoveCursor={moveCursor}
           />
         </aside>
       </div>
