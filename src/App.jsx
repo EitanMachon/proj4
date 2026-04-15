@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 // ייבוא הלוגיקה והשירותים של האפליקציה
 import useDocuments from './hooks/useDocuments'; 
 import userService from './services/userService';
-import DisplayArea from "./DisplayArea/DisplayArea";
-import Toolbar from "./Toolbar/Toolbar";
-import Keyboard from "./Keyboard/Keyboard";
+import DisplayArea from "./components/DisplayArea/DisplayArea";
+import Toolbar from "./components/Toolbar/Toolbar";
+import Keyboard from "./components/Keyboard/Keyboard";
 import './App.css'; 
 
 /**
