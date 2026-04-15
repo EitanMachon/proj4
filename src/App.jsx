@@ -103,7 +103,16 @@ const MainEditor = ({ user, setUser }) => {
  */
 function App() {
   // ניהול המשתמש, מצב הרשמה והודעות שגיאה
-  const [user, setUser] = useState(null); 
+  //const [user, setUser] = useState(null); 
+  // במקום: const [user, setUser] = useState(null);
+const [user, setUser] = useState(() => {
+  // 1. ניגשים לכספת של הדפדפן ומחפשים את המפתח 'activeUser'
+  const savedUser = localStorage.getItem('activeUser');
+  
+  // 2. אם מצאנו מידע, הופכים אותו חזרה מטקסט (String) לאובייקט
+  // אם לא מצאנו, מחזירים null (המשתמש יצטרך להתחבר)
+  return savedUser ? JSON.parse(savedUser) : null;
+});
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState('');
 
