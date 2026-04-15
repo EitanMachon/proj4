@@ -100,23 +100,34 @@ body {
 }
 
 /* הוסף את הבלוק הזה בסוף הקובץ - זה הקסם הרספונסיבי */
+/* --- התאמה למסכים קטנים (רספונסיביות) --- */
 @media (max-width: 1100px) {
   .main-layout-split {
-    flex-direction: column-reverse; /* במקום צד לצד, הם יהיו אחד מעל השני */
-    overflow-y: auto; /* מאפשר סקרול לכל הדף אם המסך קטן מדי */
-  }
-
-  .app-sidebar {
-    width: 100% !important; /* תופס את כל הרוחב כשהוא למטה */
-    min-width: 100% !important;
-    height: auto; /* גובה גמיש לפי התוכן */
-    border-right: none;
-    border-top: 2px solid var(--border-color);
+    /* הופך את התצוגה מ"צד-לצד" ל"אחד-מעל-השני", המסמך למעלה, כלים למטה */
+    flex-direction: column; 
+    overflow-y: auto; /* סקרול כללי אם הכל יחד לא נכנס למסך */
   }
 
   .app-main {
-    height: 60vh; /* נותן למסמכים רוב מהמסך */
-    flex: none;
+    /* אזור הטקסט למעלה יתפוס את רוב המקום הפנוי ויאפשר גלילה פנימית */
+    width: 100%;
+    flex: 1; 
+    height: auto; /* משחרר את המגבלה של 60vh */
+    min-height: 50vh; /* מבטיח שתמיד יהיה אזור סביר להקלדה */
+    padding: 1rem;
+  }
+
+  .app-sidebar {
+    /* המקלדת וסרגל הכלים עוברים למטה ויתפסו את כל הרוחב */
+    width: 100% !important;
+    min-width: 100% !important;
+    
+    /* מגביל את הגובה של אזור הכלים כדי שיישאר מקום למסמך עצמו */
+    max-height: 50vh; 
+    overflow-y: auto; /* פס גלילה פנימי לסרגל הכלים אם הוא ארוך מדי */
+    
+    border-right: none;
+    border-top: 2px solid var(--border-color); /* קו הפרדה מעל הסרגל */
   }
 }
 
