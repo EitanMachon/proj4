@@ -3,9 +3,9 @@ import './Button.css';
 
 /**
  * קומפוננטת כפתור גנרית - אבן הבניין של ה-UI
- * @param {string} label - הטקסט שיוצג על הכפתור
+ * @param {string} label - הטקסט שעל הכפתור
  * @param {function} onClick - הפונקציה שתופעל בלחיצה
- * @param {string} className - מחלקה נוספת לעיצוב ספציפי (למשל 'key' או 'action')
+ * @param {string} className - מחלקה נוספת לעיצוב ספציפי
  * @param {object} style - עיצוב inline אופציונלי
  */
 const Button = ({ label, onClick, className = "", style = {} }) => {

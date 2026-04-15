@@ -41,10 +41,6 @@ const Toolbar = ({
           <button className="tool-btn" onClick={() => alert('המסמך נשמר בהצלחה!')}> 
             שמור 
           </button>
-          {/* כפתור מחיקת מילה - קורא לפונקציית הלוגיקה שבנינו ב-Hook */}
-          <button className="tool-btn danger-btn" onClick={onDeleteWord} title="מחיקת המילה האחרונה">
-            <span>✂️</span> מחק מילה
-          </button>
           <button className="tool-btn danger-btn" onClick={onClearAll}>
             <span>🗑️</span> נקה דף
           </button>

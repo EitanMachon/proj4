@@ -238,12 +238,12 @@ const moveCursor = (direction) => {
       switch (direction) {
         case 'RIGHT':
           // ימינה (קדימה בטקסט)
-          if (newIndex < length) newIndex--;
+          if (newIndex < length) newIndex++;
           break;
 
         case 'LEFT':
           // שמאלה (אחורה בטקסט)
-          if (newIndex > 0) newIndex++;
+          if (newIndex > 0) newIndex--;
           break;
 
         case 'DOWN':
@@ -294,14 +294,27 @@ const moveCursor = (direction) => {
     }));
   };
 // הפונקציה הקלאסית: מקבלת את העיצוב החדש וממזגת אותו עם הקיים
-  function updateCurrentStyle(newStyleUpdates) {
-    setCurrentStyle(function(prevStyle) {
-      return { 
+  // הפונקציה המעודכנת: שומרת גם ב-State וגם ב-LocalStorage
+  const updateCurrentStyle = (newStyleUpdates) => {
+    setCurrentStyle(prevStyle => {
+      const updatedStyle = { 
         ...prevStyle, 
         ...newStyleUpdates 
       };
+      
+      // שמירת המצב המעודכן ב-LocalStorage תחת המשתמש הנוכחי
+      if (user) {
+        // משיכת המצב הקודם כדי לא לדרוס דברים אחרים (כמו activeDocId)
+        const currentState = storageService.getUserState(user.username) || {};
+        storageService.saveUserState(user.username, {
+          ...currentState,
+          currentStyle: updatedStyle
+        });
+      }
+      
+      return updatedStyle;
     });
-  }
+  };
 
   // --- 4. חשיפת הפונקציות החוצה ---
  // --- 4. חשיפת הפונקציות החוצה ---

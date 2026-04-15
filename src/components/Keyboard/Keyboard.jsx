@@ -39,7 +39,7 @@ const Keyboard = ({ onKeyClick, onDeleteChar, onDeleteWord, onMoveCursor }) => {
           </button>
         ))}
         
-        {/* מקשים מיוחדים - דרישה מחלק א' */}
+        {/* מקשי  מחיקת תו+ מחיקת מילה+ רווח+הזזת הסמן */}
         <button className="key-tile special-key backspace" onClick={onDeleteChar} title="מחיקת תו">
           ⌫ Back
         </button>
@@ -55,8 +55,8 @@ const Keyboard = ({ onKeyClick, onDeleteChar, onDeleteWord, onMoveCursor }) => {
       <div className="arrows-container">
          <button onClick={() => onMoveCursor('UP')}>⬆️</button>
          <button onClick={() => onMoveCursor('DOWN')}>⬇️</button>
-         <button onClick={() => onMoveCursor('RIGHT')}>➡️</button>
-         <button onClick={() => onMoveCursor('LEFT')}>⬅️</button>
+         <button onClick={() => onMoveCursor('RIGHT')}>⬅️</button>
+         <button onClick={() => onMoveCursor('LEFT')}>➡️</button>
       </div>
     </div>
   );

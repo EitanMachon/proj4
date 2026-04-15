@@ -1,7 +1,7 @@
 import React from 'react';
 import './DisplayArea.css';
 
-// קומפוננטת אזור התצוגה - מקבלת את רשימת המסמכים, איזה מהם פעיל, ופונקציות לניהול שלהם
+// פונקציה שמקבלת את מערך כל המסמכים הפתוחים, את התז של המסמך, הפעלה של המסמך, סגירת מחיקת המסמך, שינוי שם המשמך
 const DisplayArea = ({ documents = [], activeDocId, onSelect, onCloseDoc, onRenameDoc }) => {
   return (
     <div className="display-area-container">
@@ -50,7 +50,7 @@ const DisplayArea = ({ documents = [], activeDocId, onSelect, onCloseDoc, onRena
                   position: 'relative' // חשוב למיקום נכון של הסמן ליד האות
                 }}
               >
-                {/* הסמן הויזואלי (המהבהב) 
+                {/* הסמן הויזואלי  
                     מצייר את הסמן לפני האות הנוכחית, רק אם זה המסמך הפעיל ורק במיקום המדויק */}
                 {doc.id === activeDocId && doc.cursorIndex === index && <span className="text-cursor">|</span>}
                 
@@ -60,11 +60,11 @@ const DisplayArea = ({ documents = [], activeDocId, onSelect, onCloseDoc, onRena
             ))}
             
             {/* סמן בסוף הטקסט: מיועד למקרה שהמשתמש נמצא ממש בקצה המסמך, 
-                מחוץ לגבולות האותיות הקיימות (אחרי האות האחרונה) */}
+                מחוץ לגבולות האותיות הקיימות  */}
             {doc.id === activeDocId && doc.cursorIndex === doc.content.length && <span className="text-cursor">|</span>}
           </div>
           
-          {/* אינדיקטור חזותי נוסף למסמך הפעיל (למשל תווית "עריכה פעילה" בפינה) */}
+          {/* מופעל כאשר המסמך פעיל*/}
           {doc.id === activeDocId && <div className="focus-indicator">עריכה פעילה</div>}
         </div>
       ))}
